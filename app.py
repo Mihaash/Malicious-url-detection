@@ -3,18 +3,12 @@ import re
 import tldextract
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # needed for session storage
-
-# Function to analyze URL
-def analyze_url(url):
-    # Check if URL uses IP instead of domain
-    if re.match(r'http[s]?://\d+\.\d+\.\d+\.\d+', url):
+app.secret_key = "supersecretkey" 
+def analyze_url(url):    if re.match(r'http[s]?://\d+\.\d+\.\d+\.\d+', url):
         return "⚠️ Not Safe: Possible Malware Host (IP-based domain)"
-
-    # Suspicious keywords
     phishing_words = ['login', 'verify', 'bank', 'account', 'secure', 'paypal']
     malware_words = ['download', 'exe', 'update', 'install']
-    spam_words = ['free', 'gift', 'win', 'bonus', 'lottery', 'click']
+spam_words = ['free', 'gift', 'win', 'bonus', 'lottery', 'click']
 
     if any(word in url.lower() for word in phishing_words):
         return "❌ Not Safe: Phishing attempt"
@@ -22,8 +16,6 @@ def analyze_url(url):
         return "❌ Not Safe: Malware / Virus distribution"
     elif any(word in url.lower() for word in spam_words):
         return "❌ Not Safe: Spam / Scam link"
-
-    # Check for too many subdomains
     extracted = tldextract.extract(url)
     if extracted.subdomain and extracted.subdomain.count('.') > 1:
         return "⚠️ Not Safe: Suspicious domain structure"
@@ -40,7 +32,6 @@ def home():
         url = request.form["url"]
         result = analyze_url(url)
 
-        # Save to session history
         session["history"].append({"url": url, "result": result})
         session.modified = True
 
